@@ -1,6 +1,3 @@
-export function generateStaticParams() {
-  return Projetos.map((p) => ({ id: String(p.id) }));
-}
 export default function Projetos(){
     return (
         <main>
