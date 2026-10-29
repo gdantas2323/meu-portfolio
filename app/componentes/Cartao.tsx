@@ -3,7 +3,7 @@ type CartaoProps = {
     id: number;
     titulo: string;
     descricao: string;
-    tecnologia: string[];
+    tecnologias: string[];
 };
 
 export default function Cartao({id, titulo, descricao, tecnologias}:CartaoProps){
