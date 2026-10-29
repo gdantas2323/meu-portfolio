@@ -10,7 +10,7 @@ const links = [
 export default function Menu(){
 return(
 <nav className="bg-superficie border-b border-destaque/20">
-    <div className="max-w-4x1 mx-auto px-6 py-4 flex gap-6">
+    <div className="max-w-4xl mx-auto px-6 py-4 flex gap-6">
         {links.map((link) => (
         <Link
             key={link.href}
@@ -20,9 +20,6 @@ return(
             </Link>
         ))}
         
-    <Link href="/">Início</Link>
-    <Link href="/projetos">Projetos</Link>
-    <Link href="/contatos">Contatos</Link>
     </div>
 </nav>
 );
