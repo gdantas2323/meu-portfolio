@@ -5,6 +5,8 @@ const links = [
     {href: "/projetos",texto: "Projetos"},
     {href: "/contatos",texto: "Contatos"},
     {href: "/github",texto: "Github"},
+    {href: "/buscacep",texto: "BuscaCep"},
+    {href: "/tarefas",texto: "Tarefas"},
 
 ];
 
