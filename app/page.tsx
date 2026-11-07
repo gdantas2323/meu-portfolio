@@ -6,7 +6,7 @@ import ListaTarefas from "./componentes/ListaTarefas"
 export default function Home(){
   const nome = "Gabriel"
   return(
-      <main className="max-w4x1 mx-auto px-6 py-10">
+      <main className="max-w-4xl mx-auto px-6 py-10">
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           <h1>Olá, me chamo {nome}</h1>
           <p className = "intro">Bem-vindo!</p>
