@@ -32,6 +32,7 @@ export default function Tarefas() {
     setTarefas(
       tarefas.map((t) => (t.id === id ? { ...t, feita: !t.feita } : t))
     );
+    
   }
 
   async function remover(id) {
