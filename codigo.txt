@@ -1,0 +1,815 @@
+﻿
+===== .\app\api\contatos\route.js =====
+
+import { NextResponse } from "next/server";
+
+export async function GET(request) {
+    return NextResponse.json({ 
+        status: "Sucesso",
+        message: "Olá, primeira API!",
+        timestamp: new Date().toISOString()});
+    }
+
+
+===== .\app\api\projetos\route.js =====
+
+    import { NextResponse } from "next/server";
+
+    export async function GET(request) {
+        return NextResponse.json({ 
+            status: "Sucesso",
+            message: "Olá, primeira API!",
+            timestamp: new Date().toISOString()});
+        }           
+
+
+===== .\app\buscacep\BuscaCep.js =====
+
+export default function BuscaCep({ endereco }) {
+  return (
+    <ul>
+      <li>Rua: {endereco.logradouro}</li>
+      <li>Bairro: {endereco.bairro}</li>
+      <li>
+        Cidade: {endereco.localidade} - {endereco.uf}
+      </li>
+    </ul>
+  );
+}
+
+
+===== .\app\buscacep\page.js =====
+
+"use client";
+import { useState } from "react";
+import BuscaCep from "./BuscaCep";
+
+export default function PaginaCep() {
+  const [cep, setCep] = useState("");
+  const [aviso, setAviso] = useState("");
+  const [endereco, setEndereco] = useState(null);
+
+  async function enviarCep(e) {
+    e.preventDefault();
+
+    const cepLimpo = cep.replace(/\D/g, "");
+
+    if (cepLimpo.length !== 8) {
+      setAviso("Digite um CEP com 8 números.");
+      return;
+    }
+
+    try {
+      const res = await fetch(`https://viacep.com.br/ws/${cepLimpo}/json/`);
+      const dados = await res.json();
+
+      if (dados.erro) {
+        setAviso("CEP não encontrado.");
+        setEndereco(null);
+        return;
+      }
+
+      setEndereco(dados);
+      setAviso("");
+    } catch {
+      setAviso("Erro ao buscar o CEP. Tente de novo.");
+    }
+  }
+
+  return (
+    <div>
+      <form onSubmit={enviarCep}>
+        <input
+          value={cep}
+          onChange={(e) => setCep(e.target.value)}
+          placeholder="Digite seu CEP"
+        />
+        <button type="submit">Enviar</button>
+      </form>
+
+      <p>{aviso}</p>
+
+      {endereco && <BuscaCep endereco={endereco} />}
+    </div>
+  );
+}
+
+
+===== .\app\componentes\Tarefas.js =====
+
+"use client";
+import { useState, useEffect } from "react";
+import {
+  listarTarefas,
+  criarTarefa,
+  marcarTarefa,
+  removerTarefa,
+} from "../lib/tarefas.js";
+
+export default function Tarefas() {
+  const [tarefas, setTarefas] = useState([]);
+  const [texto, setTexto] = useState("");
+
+  useEffect(() => {
+    listarTarefas().then(setTarefas);
+  }, []);
+
+  async function criar(e) {
+    e.preventDefault();
+    if (texto.trim() === "") return;
+
+    const nova = await criarTarefa(texto);
+    setTarefas([...tarefas, nova]);
+    setTexto("");
+  }
+
+  async function marcar(id) {
+    const tarefa = tarefas.find((t) => t.id === id);
+    await marcarTarefa(id, !tarefa.feita);
+    setTarefas(
+      tarefas.map((t) => (t.id === id ? { ...t, feita: !t.feita } : t))
+    );
+  }
+
+  async function remover(id) {
+    await removerTarefa(id);
+    setTarefas(tarefas.filter((t) => t.id !== id));
+  }
+
+
+  return (
+    <div>
+      <form onSubmit={criar}>
+        <input value={texto} onChange={(e) => setTexto(e.target.value)} />
+        <button type="submit">Adicionar</button>
+      </form>
+
+      <ul>
+        {tarefas.map((t) => (
+          <li key={t.id}>
+            <input
+              type="checkbox"
+              checked={t.feita}
+              onChange={() => marcar(t.id)}
+            />
+            {t.texto}
+            <button onClick={() => remover(t.id)}>Remover</button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+
+===== .\app\contatos\page.js =====
+
+import Contato from "../../components/Contato";
+
+export default function Contatos(){
+    return (
+        <main>
+            <Contato />
+        </main>
+    );
+}
+
+
+===== .\app\github\page.js =====
+
+import { Suspense } from "react";
+
+async function Repositorios() {
+  const res = await fetch("https://api.github.com/users/gdantas2323/repos");
+  const repos = await res.json();
+
+  return (
+    <ul>
+      {repos.map((r) => (
+        <li key={r.id}>{r.name}</li>
+      ))}
+    </ul>
+  );
+} 
+
+export default function Github() {
+  return (
+    <main>
+      <h1>Meus repositórios</h1>
+      <Suspense fallback={<p>Carregando repositórios...</p>}>
+        <Repositorios />
+      </Suspense>
+    </main>
+  );
+}
+
+
+===== .\app\projetos\[id]\page.tsx =====
+
+
+===== .\app\projetos\page.js =====
+
+export default function Projetos(){
+    return (
+        <main>
+            <h1>Meus Projetos</h1>
+            <p>Tudo o que já construí.</p>
+        </main>
+    );
+}
+
+
+===== .\app\tarefas\page.js =====
+
+import Tarefas from "../../components/Tarefas";
+
+export default function PaginaTarefas() {
+  return (
+    <main>
+      <h1>Minhas tarefas</h1>
+      <Tarefas />
+    </main>
+  );
+}
+
+
+===== .\app\globals.css =====
+
+@import "tailwindcss";
+
+:root {
+  --background: #faf6ee;
+  --foreground: #1f2a24;
+  --destaque: #2f6f4f;
+  --superficie: #ffffff;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-destaque: var(--destaque);
+  --color-superficie: var(--superficie);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+
+===== .\app\layout.tsx =====
+
+import type { Metadata } from "next";
+import { Geist, Geist_Mono } from "next/font/google";
+import "./globals.css";
+import Menu from "../components/Menu"
+import Rodape from "../components/Rodape"
+
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
+
+export const metadata: Metadata = {
+  title: "Meu Portfolio",
+  description: "Este é o portfolio de Gabriel Dantas",
+};
+
+export default function RootLayout({ children }: LayoutProps<"/">) {
+  return (
+    <html
+      lang="pt-BR"
+      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+    >
+      <body className="min-h-full flex flex-col">
+        <Menu />
+        {children}
+        <Rodape />
+      </body>
+    </html>
+  );
+}
+
+
+===== .\app\page.tsx =====
+
+import Cabecalho from "../components/Cabecalho"
+import Cartao from "../components/Cartao"
+import {Projetos} from "../components/dados"
+import ListaTarefas from "../components/ListaTarefas"
+
+export default function Home(){
+  const nome = "Gabriel"
+  return(
+      <main className="max-w-4xl mx-auto px-6 py-10">
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <h1>Olá, me chamo {nome}</h1>
+          <p className = "intro">Bem-vindo!</p>
+        <Cabecalho />
+        {Projetos.map((p)=>(
+          <Cartao key={p.id}
+          id={p.id}
+          titulo={p.titulo}
+          descricao={p.descricao}
+          tecnologias={p.tecnologias}/>      
+        ))}
+      <ListaTarefas />  
+        </div>
+      </main> 
+  );
+}
+
+
+===== .\components\Cabecalho.js =====
+
+export default function Cabecalho (){
+    return(
+       <header className="col-span-full bg-destaque text-white px-6 py-8 text-center" >
+        <h1 className="text-3x1 font-bold">Meu Portfolio</h1>
+        <p className="mt-2 opacity-90">GD </p>
+       </header> 
+    );
+}
+
+
+===== .\components\Cartao.js =====
+
+"use client"
+import {useState} from "react";
+import Link from "next/link";
+import Curtir from "./Curtir";
+
+
+export default function Cartao({id, titulo, descricao, tecnologias}){
+
+const [aberto, setAberto] = useState(false);
+    
+    return(
+        <div className="bg-superficie rounded-x1 shadow-md p-6 border border-destaque/20">
+            <Link href={`/projetos/${id}`}>
+            <h2 className="text-x1 font-semibold text-destaque">{titulo}</h2>
+            </Link>
+                <div>
+                    <button onClick={() => setAberto(!aberto)}>
+                        {aberto ? "Esconder" : "Ver detalhes"}
+                    </button>
+                    {aberto && <p>Feito com HTML,CSS e JS</p>}
+                </div>
+            <ul>
+                {tecnologias.map((tec) => (
+                    <li key={tec}>{tec}</li>
+            ))}
+            </ul>
+
+            <Curtir />
+        </div>
+    );
+}
+
+
+===== .\components\Contato.js =====
+
+"use client";
+import { useState } from "react";
+import { salvarMensagem } from "../lib/Contato";
+
+export default function Contato() {
+  const [nome, setNome] = useState("");
+  const [mensagem, setMensagem] = useState("");
+  const [aviso, setAviso] = useState("");
+
+  async function enviar(e) {
+    e.preventDefault();
+
+    if (nome.trim().length < 3) {
+      setAviso("Digite seu nome completo.");
+      return;
+    }
+    if (mensagem.trim().length < 5) {
+      setAviso("Escreva uma mensagem um pouco maior.");
+      return;
+    }
+
+    try {
+      await salvarMensagem(nome.trim(), mensagem.trim());
+      setAviso(`Obrigado, ${nome}! Recebi sua mensagem.`);
+      setNome("");
+      setMensagem("");
+    } catch (erro) {
+      setAviso("Não foi possível enviar. Tente de novo.");
+    }
+  }
+
+  return (
+    <><div>
+      <form onSubmit={enviar}>
+        <div>
+          <input
+            value={nome}
+            onChange={(e) => setNome(e.target.value)}
+            placeholder="Seu nome" />
+        </div>
+        <div>
+          <textarea
+            value={mensagem}
+            onChange={(e) => setMensagem(e.target.value)}
+            placeholder="Sua mensagem"
+            rows={4} />
+        </div>
+        <button type="submit">Enviar</button>
+      </form>
+      <p>{aviso}</p>
+    </div>
+    <div>
+        <p>Contato:</p>
+        <p>gabriel@bravilsistemas.com</p>
+    </div></>
+  );
+}
+
+
+===== .\components\Curtir.js =====
+
+"use client";
+import {useState} from "react";
+
+export default function Curtir(){
+    const [curtidas, setCurtidas] = useState(0);
+    
+    return(
+        <button onClick={() => setCurtidas(curtidas +1)}>
+        ❤️ {curtidas}
+        </button>
+    )
+}
+
+
+===== .\components\dados.js =====
+
+export const Projetos=[
+    {id: 1,titulo: "Projeto 1",descricao:"Planilha Financeira",tecnologias: ["TypeScript","HTML","CSS"]},
+    {id: 2,titulo: "Projeto 2",descricao:"Organizador de peladas",tecnologias: ["TypeScript","HTML","CSS"]},
+    {id: 3,titulo: "Projeto 3",descricao:"Em Breve",tecnologias: ["JavaScript","HTML","CSS"]},
+]
+
+
+===== .\components\ListaTarefas.js =====
+
+"use client";
+import { useState} from "react";
+
+export default function ListaTarefas() {
+  const [tarefas, setTarefas] = useState([
+    { id: 1, texto: "Estudar useState", feita: false },
+    { id: 2, texto: "Fazer o formulário de contato", feita: true },
+  ]);
+  const [novaTarefa, setNovaTarefa] = useState("");
+
+  function adicionar(e) {
+    e.preventDefault();
+    if (novaTarefa.trim() === "") return;
+    setTarefas([...tarefas, { id: Date.now(), texto: novaTarefa, feita: false }]);
+    setNovaTarefa("");
+  }
+
+  function alternar(id) {
+    setTarefas(
+      tarefas.map((t) => (t.id === id ? { ...t, feita: !t.feita } : t))
+    );
+  }
+
+  const faltam = tarefas.filter((t) => !t.feita).length;
+  const total = tarefas.length;
+  const percentual =
+    total === 0 ? 0 : Math.round(((total - faltam) / total) * 100);
+
+  return (
+    <section className="max-w-md mx-auto my-10 p-6 rounded-2xl bg-superficie shadow-lg border border-destaque/20">
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-xl font-bold text-destaque">Minhas tarefas</h2>
+        <span className="text-sm font-medium px-3 py-1 rounded-full bg-destaque/10 text-destaque">
+          {faltam === 0 ? "Tudo feito!" : `Faltam ${faltam} de ${total}`}
+        </span>
+      </div>
+
+      <div className="h-2 mb-6 rounded-full bg-destaque/10 overflow-hidden">
+        <div
+          className="h-full rounded-full bg-destaque transition-all duration-500"
+          style={{ width: `${percentual}%` }}
+        />
+      </div>
+
+      <form onSubmit={adicionar} className="flex gap-2 mb-6">
+        <input
+          value={novaTarefa}
+          onChange={(e) => setNovaTarefa(e.target.value)}
+          placeholder="Nova tarefa"
+          className="flex-1 px-4 py-2 rounded-lg border border-destaque/30 bg-white outline-none focus:ring-2 focus:ring-destaque/40 placeholder:text-gray-400"
+        />
+        <button
+          type="submit"
+          className="px-4 py-2 rounded-lg bg-destaque text-white font-medium hover:opacity-90 active:scale-95 transition"
+        >
+          Adicionar
+        </button>
+      </form>
+
+      <ul className="space-y-2">
+        {tarefas.map((t) => (
+          <li
+            key={t.id}
+            className="rounded-lg hover:bg-destaque/5 transition-colors"
+          >
+            <label className="flex items-center gap-3 px-3 py-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={t.feita}
+                onChange={() => alternar(t.id)}
+                className="size-5 accent-destaque cursor-pointer"
+              />
+              <span
+                className={`transition-colors ${
+                  t.feita ? "line-through text-gray-400" : ""
+                }`}
+              >
+                {t.texto}
+              </span>
+            </label>
+          </li>
+        ))}
+      </ul>
+
+      {total === 0 && (
+        <p className="text-center text-gray-400 py-4">
+          Nenhuma tarefa por enquanto.
+        </p>
+      )}
+    </section>
+  );
+}
+
+
+===== .\components\Menu.js =====
+
+import Link from "next/link";
+
+const links = [
+    {href: "/",texto: "Inicio"},
+    {href: "/projetos",texto: "Projetos"},
+    {href: "/contatos",texto: "Contatos"},
+    {href: "/github",texto: "Github"},
+    {href: "/buscacep",texto: "BuscaCep"},
+    {href: "/tarefas",texto: "Tarefas"},
+
+];
+
+export default function Menu(){
+return(
+<nav className="bg-superficie border-b border-destaque/20">
+    <div className="max-w-4xl mx-auto px-6 py-4 flex gap-6">
+        {links.map((link) => (
+        <Link
+            key={link.href}
+            href={link.href}
+            className="font-medium hover:text-destaque transition-colors">
+            {link.texto}
+            </Link>
+        ))}
+        
+    </div>
+</nav>
+);
+}
+
+
+===== .\components\Rodape.js =====
+
+export default async function Rodape(){
+    "use cache";
+    const anoAtual = new Date().getFullYear();
+    
+    return(
+        <footer className="border-t border-destaque/20 mt-16">
+            <p className="max-w-4x1 mx-auto px-6 py-y text-sm text-center text-foreground/70">© {anoAtual} Criado por Gabriel Dantas
+            </p>
+        </footer>
+    )
+}
+
+
+===== .\components\Tarefas.js =====
+
+"use client";
+import { useState, useEffect } from "react";
+import {
+  listarTarefas,
+  criarTarefa,
+  marcarTarefa,
+  removerTarefa,
+} from "../lib/tarefas.js";
+
+export default function Tarefas() {
+  const [tarefas, setTarefas] = useState([]);
+  const [texto, setTexto] = useState("");
+
+  useEffect(() => {
+    listarTarefas().then(setTarefas);
+  }, []);
+
+  async function criar(e) {
+    e.preventDefault();
+    if (texto.trim() === "") return;
+
+    const nova = await criarTarefa(texto);
+    setTarefas([...tarefas, nova]);
+    setTexto("");
+  }
+
+  async function marcar(id) {
+    const tarefa = tarefas.find((t) => t.id === id);
+    await marcarTarefa(id, !tarefa.feita);
+    setTarefas(
+      tarefas.map((t) => (t.id === id ? { ...t, feita: !t.feita } : t))
+    );
+  }
+
+  async function remover(id) {
+    await removerTarefa(id);
+    setTarefas(tarefas.filter((t) => t.id !== id));
+  }
+
+
+  return (
+    <div>
+      <form onSubmit={criar}>
+        <input value={texto} onChange={(e) => setTexto(e.target.value)} />
+        <button type="submit">Adicionar</button>
+      </form>
+
+      <ul>
+        {tarefas.map((t) => (
+          <li key={t.id}>
+            <input
+              type="checkbox"
+              checked={t.feita}
+              onChange={() => marcar(t.id)}
+            />
+            {t.texto}
+            <button onClick={() => remover(t.id)}>Remover</button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+
+===== .\lib\Contato.js =====
+
+import { db } from "./firebase";
+import { collection, addDoc } from "firebase/firestore";
+
+const colecao = collection(db, "mensagens");
+
+export async function salvarMensagem(nome, mensagem) {
+  await addDoc(colecao, {
+    nome: nome,
+    mensagem: mensagem,
+    criadaEm: Date.now(),
+  });
+}
+
+
+===== .\lib\firebase.js =====
+
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getFirestore } from "firebase/firestore";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+export const db = getFirestore(app);
+
+
+===== .\lib\tarefas.js =====
+
+import { db } from "./firebase";
+import {
+  collection,
+  addDoc,
+  getDocs,
+  updateDoc,
+  deleteDoc,
+  doc,
+  query,
+  orderBy,
+} from "firebase/firestore";
+
+const colecao = collection(db, "tarefas");
+
+export async function listarTarefas() {
+  const consulta = query(colecao, orderBy("criadaEm"));
+  const resultado = await getDocs(consulta);
+  return resultado.docs.map((d) => ({ id: d.id, ...d.data() }));
+}
+
+export async function criarTarefa(texto) {
+  const dados = { texto: texto, feita: false, criadaEm: Date.now() };
+  const ref = await addDoc(colecao, dados);
+  return { id: ref.id, ...dados };
+}
+
+export async function marcarTarefa(id, feita) {
+  await updateDoc(doc(db, "tarefas", id), { feita: feita });
+}
+
+export async function removerTarefa(id) {
+  await deleteDoc(doc(db, "tarefas", id));
+}
+
+
+===== .\next-env.d.ts =====
+
+/// <reference types="next" />
+/// <reference types="next/image-types/global" />
+import "./.next/dev/types/routes.d.ts";
+import "./.next/dev/types/root-params.d.ts";
+
+// NOTE: This file should not be edited
+// see https://nextjs.org/docs/app/api-reference/config/typescript for more information.
+
+
+===== .\next.config.ts =====
+
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
+  /* config options here */
+  experimental: {
+    agentFeedback: true,
+  },
+  cacheComponents: true,
+  partialPrefetching: true,
+  turbopack: {
+    rules: {
+      "*.css": {
+        loaders: ["@tailwindcss/turbopack"],
+        as: "*.css",
+      },
+    },
+  },
+};
+
+export default nextConfig;
+
+
+===== .\package.json =====
+
+{
+  "name": "meu-portfolio",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "firebase": "^13.2.0",
+    "next": "16.4.3",
+    "react": "19.3.0",
+    "react-dom": "19.3.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/turbopack": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.4.3",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}
+

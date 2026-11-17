@@ -1,4 +1,4 @@
-import Tarefas from "../componentes/Tarefas";
+import Tarefas from "../../components/Tarefas";
 
 export default function PaginaTarefas() {
   return (

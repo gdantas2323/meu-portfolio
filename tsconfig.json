@@ -29,6 +29,6 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts"
-, "app/componentes/Contato.js", "app/buscacep/BuscaCep.js", "app/buscacep/page.js", "app/github/page.js"  ],
+, "components/Contato.js", "app/buscacep/BuscaCep.js", "app/buscacep/page.js", "app/github/page.js", "components/Curtir.js", "components/Cabecalho.js", "components/Cartao.js", "components/ListaTarefas.js", "components/Menu.js", "components/Rodape.js"  ],
   "exclude": ["node_modules"]
 }

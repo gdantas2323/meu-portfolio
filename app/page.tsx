@@ -1,7 +1,6 @@
-import Cabecalho from "./componentes/Cabecalho"
-import Cartao from "./componentes/Cartao"
-import {Projetos} from "./dados"
-import ListaTarefas from "./componentes/ListaTarefas"
+import Cabecalho from "../components/Cabecalho"
+import Cartao from "../components/Cartao"
+import {Projetos} from "../components/dados"
 
 export default function Home(){
   const nome = "Gabriel"
@@ -17,8 +16,7 @@ export default function Home(){
           titulo={p.titulo}
           descricao={p.descricao}
           tecnologias={p.tecnologias}/>      
-        ))}
-      <ListaTarefas />  
+        ))} 
         </div>
       </main> 
   );

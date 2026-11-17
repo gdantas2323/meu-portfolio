@@ -3,15 +3,8 @@ import {useState} from "react";
 import Link from "next/link";
 import Curtir from "./Curtir";
 
-type CartaoProps = {
-    id: number;
-    titulo: string;
-    descricao: string;
-    tecnologias: string[];
-};
 
-
-export default function Cartao({id, titulo, descricao, tecnologias}:CartaoProps){
+export default function Cartao({id, titulo, descricao, tecnologias}){
 
 const [aberto, setAberto] = useState(false);
     

@@ -5,7 +5,7 @@ import {
   criarTarefa,
   marcarTarefa,
   removerTarefa,
-} from "../../lib/tarefas.js";
+} from "../lib/tarefas.js";
 
 export default function Tarefas() {
   const [tarefas, setTarefas] = useState([]);

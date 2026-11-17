@@ -11,7 +11,7 @@ async function Repositorios() {
       ))}
     </ul>
   );
-}
+} 
 
 export default function Github() {
   return (

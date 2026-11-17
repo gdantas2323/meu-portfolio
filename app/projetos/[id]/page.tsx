@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { Projetos } from "../../dados";
+import { Projetos } from "../../../components/dados";
 
 export function generateStaticParams() {
   return Projetos.map((p) => ({ id: String(p.id) }));

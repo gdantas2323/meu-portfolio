@@ -1,23 +1,21 @@
 "use client";
-import { useState, type FormEvent } from "react";
-
-type Tarefa = { id: number; texto: string; feita: boolean };
+import { useState} from "react";
 
 export default function ListaTarefas() {
-  const [tarefas, setTarefas] = useState<Tarefa[]>([
+  const [tarefas, setTarefas] = useState([
     { id: 1, texto: "Estudar useState", feita: false },
     { id: 2, texto: "Fazer o formulário de contato", feita: true },
   ]);
   const [novaTarefa, setNovaTarefa] = useState("");
 
-  function adicionar(e: FormEvent<HTMLFormElement>) {
+  function adicionar(e) {
     e.preventDefault();
     if (novaTarefa.trim() === "") return;
     setTarefas([...tarefas, { id: Date.now(), texto: novaTarefa, feita: false }]);
     setNovaTarefa("");
   }
 
-  function alternar(id: number) {
+  function alternar(id) {
     setTarefas(
       tarefas.map((t) => (t.id === id ? { ...t, feita: !t.feita } : t))
     );

@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { salvarMensagem } from "../../lib/Contato";
+import { enviarContato } from "../services/contato";
 
 export default function Contato() {
   const [nome, setNome] = useState("");
@@ -10,22 +10,13 @@ export default function Contato() {
   async function enviar(e) {
     e.preventDefault();
 
-    if (nome.trim().length < 3) {
-      setAviso("Digite seu nome completo.");
-      return;
-    }
-    if (mensagem.trim().length < 5) {
-      setAviso("Escreva uma mensagem um pouco maior.");
-      return;
-    }
-
     try {
-      await salvarMensagem(nome.trim(), mensagem.trim());
+      await enviarContato(nome, mensagem);
       setAviso(`Obrigado, ${nome}! Recebi sua mensagem.`);
       setNome("");
       setMensagem("");
     } catch (erro) {
-      setAviso("Não foi possível enviar. Tente de novo.");
+      setAviso(erro.message);
     }
   }
 

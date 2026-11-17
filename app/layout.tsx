@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Menu from "./componentes/Menu"
-import Rodape from "./componentes/Rodape"
+import Menu from "../components/Menu"
+import Rodape from "../components/Rodape"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
